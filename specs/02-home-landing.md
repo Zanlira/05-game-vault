@@ -1,6 +1,6 @@
 ---
 spec: 02-home-landing
-state: Approved
+state: Implemented
 dependencies: 01-mvp-screens
 date: 2026-06-15
 objective: Implementar la home landing page de Arcade Vault en `/`, mover Biblioteca a `/games`, y actualizar el Nav acorde.

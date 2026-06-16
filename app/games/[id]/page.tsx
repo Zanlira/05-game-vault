@@ -18,7 +18,7 @@ export default function GameDetail() {
         <div className="pixel" style={{ fontSize: 14, color: "var(--magenta)", marginBottom: 12 }}>
           JUEGO NO ENCONTRADO
         </div>
-        <button className="btn ghost" onClick={() => router.push("/")}>VOLVER AL VAULT</button>
+        <button className="btn ghost" onClick={() => router.push("/games")}>VOLVER AL VAULT</button>
       </div>
     );
   }
@@ -60,7 +60,7 @@ export default function GameDetail() {
             <button className="btn xl pulse" onClick={() => router.push(`/games/${game.id}/play`)}>
               ▶  JUGAR AHORA
             </button>
-            <button className="btn ghost lg" onClick={() => router.push("/")}>
+            <button className="btn ghost lg" onClick={() => router.push("/games")}>
               VOLVER AL VAULT
             </button>
           </div>

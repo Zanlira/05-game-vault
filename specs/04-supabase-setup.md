@@ -1,6 +1,6 @@
 ---
 spec: 04-supabase-setup
-state: Approved
+state: Implemented
 dependencies: 03-about-contact
 date: 2026-06-18
 objective: Integrar Supabase en la app Next.js creando clientes browser y server listos para auth, scores, realtime y edge functions.

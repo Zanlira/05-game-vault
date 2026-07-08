@@ -6,22 +6,23 @@ import { GAMES } from "@/app/data/games";
 import { seededScores, type ScoreRow } from "@/app/data/scores";
 import { getTopScores } from "@/lib/supabase/scores";
 import { useUser } from "@/app/context/UserContext";
+import { GAME_ENGINES } from "@/app/components/games/registry";
 
 export default function HallOfFame() {
   const [tab, setTab] = useState(GAMES[0].id);
   const { user } = useUser();
   const router = useRouter();
-  const isAsteroids = tab === "asteroids";
+  const hasEngine = tab in GAME_ENGINES;
 
   const mockRows = useMemo(() => seededScores(tab.length * 23 + 7, 12), [tab]);
   const [realRows, setRealRows] = useState<ScoreRow[]>([]);
-  const [loading, setLoading] = useState(isAsteroids);
+  const [loading, setLoading] = useState(hasEngine);
 
   useEffect(() => {
-    if (!isAsteroids) return;
+    if (!hasEngine) return;
     let cancelled = false;
     setLoading(true);
-    getTopScores("asteroids", 12)
+    getTopScores(tab, 12)
       .then((data) => {
         if (!cancelled) setRealRows(data);
       })
@@ -35,11 +36,11 @@ export default function HallOfFame() {
     return () => {
       cancelled = true;
     };
-  }, [isAsteroids]);
+  }, [hasEngine, tab]);
 
-  const rows = isAsteroids ? realRows : mockRows;
+  const rows = hasEngine ? realRows : mockRows;
   const game = GAMES.find((g) => g.id === tab)!;
-  const showYouBlock = user && (!isAsteroids || rows.length >= 6);
+  const showYouBlock = user && (!hasEngine || rows.length >= 6);
   const youRank = showYouBlock ? Math.floor(8 + (tab.length % 4)) : null;
   const youScore = showYouBlock ? rows[5]?.score - 2400 : null;
 
@@ -64,7 +65,7 @@ export default function HallOfFame() {
         ))}
       </div>
 
-      {isAsteroids && loading ? (
+      {hasEngine && loading ? (
         <div
           style={{
             padding: "48px 0",
@@ -74,7 +75,7 @@ export default function HallOfFame() {
         >
           CARGANDO…
         </div>
-      ) : isAsteroids && rows.length === 0 ? (
+      ) : hasEngine && rows.length === 0 ? (
         <div
           style={{
             padding: "48px 0",

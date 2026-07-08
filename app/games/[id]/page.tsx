@@ -5,25 +5,24 @@ import { useParams, useRouter } from "next/navigation";
 import { GAMES } from "@/app/data/games";
 import { seededScores, type ScoreRow } from "@/app/data/scores";
 import { getTopScores } from "@/lib/supabase/scores";
+import { GAME_ENGINES } from "@/app/components/games/registry";
 
 export default function GameDetail() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const isAsteroids = id === "asteroids";
+  const hasEngine = id in GAME_ENGINES;
 
   const game = useMemo(() => GAMES.find((g) => g.id === id), [id]);
   const mockScores = useMemo(() => seededScores(id.length * 17 + 3, 10), [id]);
 
-  const [scores, setScores] = useState<ScoreRow[]>(
-    isAsteroids ? [] : mockScores
-  );
-  const [loading, setLoading] = useState(isAsteroids);
+  const [scores, setScores] = useState<ScoreRow[]>(hasEngine ? [] : mockScores);
+  const [loading, setLoading] = useState(hasEngine);
 
   useEffect(() => {
-    if (!isAsteroids) return;
+    if (!hasEngine) return;
     let cancelled = false;
     setLoading(true);
-    getTopScores("asteroids", 10)
+    getTopScores(id, 10)
       .then((rows) => {
         if (!cancelled) setScores(rows);
       })
@@ -37,7 +36,7 @@ export default function GameDetail() {
     return () => {
       cancelled = true;
     };
-  }, [isAsteroids]);
+  }, [hasEngine, id]);
 
   if (!game) {
     return (

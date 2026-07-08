@@ -1,4 +1,5 @@
 import type { ComponentType, RefAttributes } from "react";
+import Arkanoid from "./Arkanoid";
 import Asteroids from "./Asteroids";
 import Tetris from "./Tetris";
 
@@ -18,6 +19,7 @@ export const GAME_ENGINES: Record<
   string,
   ComponentType<GameProps & RefAttributes<GameHandle>>
 > = {
+  arkanoid: Arkanoid,
   asteroids: Asteroids,
   tetris: Tetris,
 };

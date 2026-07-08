@@ -21,9 +21,12 @@ No test runner configured yet.
 
 usa siempre /frontend-design para diseñar interfaces de usuario.
 
+Para integrar un juego nuevo (de `references/started-games/` o externo) al vault con leaderboard real, usa `/add-game` — genera el spec, luego correr `/spec-impl` sobre él.
+
 ## Architecture
 
 App Router file conventions in `app/`:
+
 - `layout.tsx` — root layout, sets Geist fonts, full-height flex body
 - `page.tsx` — route segment page
 - `globals.css` — global styles

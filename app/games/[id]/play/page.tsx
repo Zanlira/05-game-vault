@@ -4,9 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { GAMES } from "@/app/data/games";
 import { useUser } from "@/app/context/UserContext";
-import Asteroids, {
-  type AsteroidsHandle,
-} from "@/app/components/games/Asteroids";
+import { GAME_ENGINES, type GameHandle } from "@/app/components/games/registry";
 import { insertScore } from "@/lib/supabase/scores";
 
 export default function GamePlayer() {
@@ -15,7 +13,8 @@ export default function GamePlayer() {
   const { user } = useUser();
 
   const game = GAMES.find((g) => g.id === id);
-  const isAsteroids = id === "asteroids";
+  const hasEngine = id in GAME_ENGINES;
+  const Engine = GAME_ENGINES[id];
 
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -25,21 +24,21 @@ export default function GamePlayer() {
   const [name, setName] = useState(user?.name ?? "INVITADO");
   const [saved, setSaved] = useState(false);
 
-  const asteroidsRef = useRef<AsteroidsHandle>(null);
+  const engineRef = useRef<GameHandle>(null);
 
   useEffect(() => {
-    if (isAsteroids || over || paused) return;
+    if (hasEngine || over || paused) return;
     const t = setInterval(
       () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
       220
     );
     return () => clearInterval(t);
-  }, [isAsteroids, over, paused]);
+  }, [hasEngine, over, paused]);
 
   useEffect(() => {
-    if (isAsteroids) return;
+    if (hasEngine) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [isAsteroids, score]);
+  }, [hasEngine, score]);
 
   function endGame() {
     setOver(true);
@@ -60,9 +59,9 @@ export default function GamePlayer() {
   }
 
   async function saveScore() {
-    if (isAsteroids) {
+    if (hasEngine) {
       try {
-        await insertScore({ game: "asteroids", playerName: name, score });
+        await insertScore({ game: id, playerName: name, score });
       } catch {}
       setSaved(true);
       return;
@@ -93,8 +92,10 @@ export default function GamePlayer() {
             <div className="v">{score.toLocaleString("es-ES")}</div>
           </div>
           <div className="hud-stat lives">
-            <div className="l">Vidas</div>
-            <div className="v">{"♥ ".repeat(lives).trim() || "—"}</div>
+            <div className="l">{id === "tetris" ? "Líneas" : "Vidas"}</div>
+            <div className="v">
+              {id === "tetris" ? lives : "♥ ".repeat(lives).trim() || "—"}
+            </div>
           </div>
           <div className="hud-stat level">
             <div className="l">Nivel</div>
@@ -108,7 +109,7 @@ export default function GamePlayer() {
           <button
             className="btn magenta"
             onClick={() =>
-              isAsteroids ? asteroidsRef.current?.forceGameOver() : endGame()
+              hasEngine ? engineRef.current?.forceGameOver() : endGame()
             }
           >
             FIN
@@ -124,9 +125,9 @@ export default function GamePlayer() {
 
       <div className="crt">
         <div className="crt-screen">
-          {isAsteroids ? (
-            <Asteroids
-              ref={asteroidsRef}
+          {hasEngine ? (
+            <Engine
+              ref={engineRef}
               paused={paused}
               onScoreChange={setScore}
               onLivesChange={setLives}

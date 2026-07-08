@@ -17,9 +17,12 @@ export async function POST(request: NextRequest) {
 
   try {
     await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: "zantlira@gmail.com",
-      subject: `Mensaje de ${name} — Game Vault Contact`,
+      from: "support@elyntic.mx",
+      to: [
+        "yairramirezgaona@gmail.com",
+        "zantlira@gmail.com"
+      ],
+      subject: `Mensaje de ${name} — Elyntic Compras`,
       text: `Nombre: ${name}\nEmail: ${email}\n\n${msg}`,
     });
 

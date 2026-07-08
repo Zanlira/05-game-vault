@@ -1,6 +1,7 @@
 import type { ComponentType, RefAttributes } from "react";
 import Arkanoid from "./Arkanoid";
 import Asteroids from "./Asteroids";
+import Snake from "./Snake";
 import Tetris from "./Tetris";
 
 export type GameProps = {
@@ -21,5 +22,6 @@ export const GAME_ENGINES: Record<
 > = {
   arkanoid: Arkanoid,
   asteroids: Asteroids,
+  snake: Snake,
   tetris: Tetris,
 };

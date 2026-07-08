@@ -7,6 +7,7 @@ import { useUser } from "@/app/context/UserContext";
 import Asteroids, {
   type AsteroidsHandle,
 } from "@/app/components/games/Asteroids";
+import { insertScore } from "@/lib/supabase/scores";
 
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
@@ -58,7 +59,14 @@ export default function GamePlayer() {
     setName(user?.name ?? "INVITADO");
   }
 
-  function saveScore() {
+  async function saveScore() {
+    if (isAsteroids) {
+      try {
+        await insertScore({ game: "asteroids", playerName: name, score });
+      } catch {}
+      setSaved(true);
+      return;
+    }
     try {
       const key = "av_scores";
       const prev = JSON.parse(localStorage.getItem(key) ?? "[]");

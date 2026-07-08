@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { GAMES } from "@/app/data/games";
 import { useUser } from "@/app/context/UserContext";
+import Asteroids, {
+  type AsteroidsHandle,
+} from "@/app/components/games/Asteroids";
 
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
@@ -11,26 +14,40 @@ export default function GamePlayer() {
   const { user } = useUser();
 
   const game = GAMES.find((g) => g.id === id);
+  const isAsteroids = id === "asteroids";
 
   const [score, setScore] = useState(0);
-  const [lives] = useState(3);
+  const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [paused, setPaused] = useState(false);
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user?.name ?? "INVITADO");
   const [saved, setSaved] = useState(false);
 
+  const asteroidsRef = useRef<AsteroidsHandle>(null);
+
   useEffect(() => {
-    if (over || paused) return;
-    const t = setInterval(() => setScore((s) => s + Math.floor(10 + Math.random() * 90)), 220);
+    if (isAsteroids || over || paused) return;
+    const t = setInterval(
+      () => setScore((s) => s + Math.floor(10 + Math.random() * 90)),
+      220
+    );
     return () => clearInterval(t);
-  }, [over, paused]);
+  }, [isAsteroids, over, paused]);
 
   useEffect(() => {
+    if (isAsteroids) return;
     if (score > 0 && score % 2500 < 100) setLevel((l) => l + 1);
-  }, [score]);
+  }, [isAsteroids, score]);
 
-  function endGame() { setOver(true); }
+  function endGame() {
+    setOver(true);
+  }
+
+  function handleGameOver(finalScore: number) {
+    setScore(finalScore);
+    setOver(true);
+  }
 
   function restart() {
     setScore(0);
@@ -59,7 +76,9 @@ export default function GamePlayer() {
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
           <div className="hud-stat">
             <div className="l">Jugador</div>
-            <div className="v" style={{ color: "var(--ink)" }}>{name}</div>
+            <div className="v" style={{ color: "var(--ink)" }}>
+              {name}
+            </div>
           </div>
           <div className="hud-stat">
             <div className="l">Puntuación</div>
@@ -78,25 +97,61 @@ export default function GamePlayer() {
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
-          <button className="btn magenta" onClick={endGame}>FIN</button>
-          <button className="btn ghost" onClick={() => router.push(`/games/${id}`)}>SALIR</button>
+          <button
+            className="btn magenta"
+            onClick={() =>
+              isAsteroids ? asteroidsRef.current?.forceGameOver() : endGame()
+            }
+          >
+            FIN
+          </button>
+          <button
+            className="btn ghost"
+            onClick={() => router.push(`/games/${id}`)}
+          >
+            SALIR
+          </button>
         </div>
       </div>
 
       <div className="crt">
         <div className="crt-screen">
-          <div className="game-arena">
-            <div className="grid-floor" />
-            <div className="enemy e1" />
-            <div className="enemy e2" />
-            <div className="enemy e3" />
-            <div className="player-ship" />
-          </div>
+          {isAsteroids ? (
+            <Asteroids
+              ref={asteroidsRef}
+              paused={paused}
+              onScoreChange={setScore}
+              onLivesChange={setLives}
+              onLevelChange={setLevel}
+              onGameOver={handleGameOver}
+            />
+          ) : (
+            <div className="game-arena">
+              <div className="grid-floor" />
+              <div className="enemy e1" />
+              <div className="enemy e2" />
+              <div className="enemy e3" />
+              <div className="player-ship" />
+            </div>
+          )}
           {paused && (
-            <div className="crt-content" style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}>
+            <div
+              className="crt-content"
+              style={{ background: "rgba(0,0,0,0.6)", zIndex: 5 }}
+            >
               <div>
-                <div className="pixel neon-yellow" style={{ fontSize: 22 }}>EN PAUSA</div>
-                <div className="mono" style={{ fontSize: 11, color: "var(--ink-dim)", marginTop: 10, letterSpacing: "0.16em" }}>
+                <div className="pixel neon-yellow" style={{ fontSize: 22 }}>
+                  EN PAUSA
+                </div>
+                <div
+                  className="mono"
+                  style={{
+                    fontSize: 11,
+                    color: "var(--ink-dim)",
+                    marginTop: 10,
+                    letterSpacing: "0.16em",
+                  }}
+                >
                   PULSA REANUDAR PARA CONTINUAR
                 </div>
               </div>
@@ -120,17 +175,28 @@ export default function GamePlayer() {
               <div className="input-row">
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value.toUpperCase().slice(0, 10))}
+                  onChange={(e) =>
+                    setName(e.target.value.toUpperCase().slice(0, 10))
+                  }
                   placeholder="TUS INICIALES"
                 />
-                <button className="btn yellow" onClick={saveScore}>GUARDAR PUNTUACIÓN</button>
+                <button className="btn yellow" onClick={saveScore}>
+                  GUARDAR PUNTUACIÓN
+                </button>
               </div>
             ) : (
               <div className="toast-saved">▸ PUNTUACIÓN GUARDADA_</div>
             )}
             <div className="actions">
-              <button className="btn" onClick={restart}>JUGAR DE NUEVO</button>
-              <button className="btn magenta" onClick={() => router.push("/games")}>VOLVER AL VAULT</button>
+              <button className="btn" onClick={restart}>
+                JUGAR DE NUEVO
+              </button>
+              <button
+                className="btn magenta"
+                onClick={() => router.push("/games")}
+              >
+                VOLVER AL VAULT
+              </button>
             </div>
           </div>
         </div>

@@ -46,6 +46,8 @@ Para integrar un juego nuevo (de `references/started-games/` o externo) al vault
 
 `game-jam` — recibe un tema libre y genera 2 propuestas de juego distintas, cada una con spec completo en `specs/game-jam/<id>/spec.md`. Se lanza 2x en paralelo (ángulos categoría/color distintos). Usar `/game-jam <tema>` para dispararlo.
 
+`skin-designer` — implementa 3 skins (`clasico` default, `neon`, `retro`) sobre UN juego jugable indicado (arkanoid, asteroids, snake, tetris). Edita engine + wrapper, mantiene paletas en `app/components/games/themes.ts`, registra progreso en `references/games-skin-themes.md`. Procesa un juego por invocación.
+
 ## Architecture
 
 App Router file conventions in `app/`:

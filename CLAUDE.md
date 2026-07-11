@@ -44,6 +44,8 @@ Para integrar un juego nuevo (de `references/started-games/` o externo) al vault
 
 `game-planner` — decide qué juego arcade añadir al vault. Investiga catálogo actual, huecos categoría/mecánica/estética, propone candidatos, mantiene memoria en `references/game-suggestions.md`. Usar antes de `/add-game`.
 
+`game-jam` — recibe un tema libre y genera 2 propuestas de juego distintas, cada una con spec completo en `specs/game-jam/<id>/spec.md`. Se lanza 2x en paralelo (ángulos categoría/color distintos). Usar `/game-jam <tema>` para dispararlo.
+
 ## Architecture
 
 App Router file conventions in `app/`:

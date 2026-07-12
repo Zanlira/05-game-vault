@@ -3,9 +3,11 @@ import Arkanoid from "./Arkanoid";
 import Asteroids from "./Asteroids";
 import Snake from "./Snake";
 import Tetris from "./Tetris";
+import type { SkinId } from "./themes";
 
 export type GameProps = {
   paused: boolean;
+  skin?: SkinId;
   onScoreChange: (score: number) => void;
   onLivesChange: (lives: number) => void;
   onLevelChange: (level: number) => void;

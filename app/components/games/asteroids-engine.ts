@@ -12,13 +12,39 @@ export type AsteroidsControls = {
   destroy: () => void;
 };
 
+import { ASTEROIDS_THEMES, type SkinId } from "./themes";
+
 export function createAsteroidsGame(
   canvas: HTMLCanvasElement,
-  hooks: AsteroidsHooks
+  hooks: AsteroidsHooks,
+  skin: SkinId = "clasico"
 ): AsteroidsControls {
   const ctx = canvas.getContext("2d")!;
   const W = 800;
   const H = 600;
+  const palette = ASTEROIDS_THEMES[skin];
+  const hasGlow = !!palette.glow;
+
+  function withGlow(color: string, blur = 10) {
+    if (hasGlow) {
+      ctx.shadowColor = palette.glow!;
+      ctx.shadowBlur = blur;
+    } else {
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function clearGlow() {
+    ctx.shadowBlur = 0;
+  }
+
+  function withAlpha(hex: string, alpha: number) {
+    const clean = hex.replace("#", "");
+    const r = parseInt(clean.substring(0, 2), 16);
+    const g = parseInt(clean.substring(2, 4), 16);
+    const b = parseInt(clean.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha.toFixed(2)})`;
+  }
 
   // ── Input ─────────────────────────────────────────────────────────────────────
 
@@ -83,10 +109,12 @@ export function createAsteroidsGame(
     }
 
     draw() {
-      ctx.fillStyle = "#fff";
+      withGlow(palette.primary, 8);
+      ctx.fillStyle = palette.primary;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
       ctx.fill();
+      clearGlow();
     }
   }
 
@@ -149,7 +177,8 @@ export function createAsteroidsGame(
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.rot);
-      ctx.strokeStyle = "#fff";
+      withGlow(palette.primary, 6);
+      ctx.strokeStyle = palette.primary;
       ctx.lineWidth = 1.5;
       ctx.lineJoin = "round";
       ctx.beginPath();
@@ -158,6 +187,7 @@ export function createAsteroidsGame(
         ctx.lineTo(this.verts[i][0], this.verts[i][1]);
       ctx.closePath();
       ctx.stroke();
+      clearGlow();
       ctx.restore();
     }
   }
@@ -197,12 +227,14 @@ export function createAsteroidsGame(
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(Math.PI / 4);
-      ctx.strokeStyle = "#0ff";
+      withGlow(palette.accent, 10);
+      ctx.strokeStyle = palette.accent;
       ctx.lineWidth = 2;
       const r = this.radius * pulse;
       ctx.strokeRect(-r, -r, r * 2, r * 2);
+      clearGlow();
       ctx.restore();
-      ctx.fillStyle = "#0ff";
+      ctx.fillStyle = palette.accent;
       ctx.font = "bold 12px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -292,7 +324,8 @@ export function createAsteroidsGame(
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle);
-      ctx.strokeStyle = "#fff";
+      withGlow(palette.primary, 8);
+      ctx.strokeStyle = palette.primary;
       ctx.lineWidth = 1.5;
       ctx.lineJoin = "round";
 
@@ -304,6 +337,7 @@ export function createAsteroidsGame(
       ctx.lineTo(-12, 9); // ala derecha
       ctx.closePath();
       ctx.stroke();
+      clearGlow();
 
       // Llama del propulsor
       if (this.thrusting && Math.random() > 0.35) {
@@ -311,8 +345,10 @@ export function createAsteroidsGame(
         ctx.moveTo(-8, -4);
         ctx.lineTo(-8 - rand(6, 14), 0);
         ctx.lineTo(-8, 4);
-        ctx.strokeStyle = "rgba(255, 130, 0, 0.85)";
+        withGlow(palette.accent, 8);
+        ctx.strokeStyle = palette.accent;
         ctx.stroke();
+        clearGlow();
       }
 
       ctx.restore();
@@ -350,7 +386,7 @@ export function createAsteroidsGame(
 
     draw() {
       const alpha = this.ttl / this.life;
-      ctx.strokeStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
+      ctx.strokeStyle = withAlpha(palette.primary, alpha);
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
@@ -523,7 +559,7 @@ export function createAsteroidsGame(
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(-Math.PI / 2);
-    ctx.strokeStyle = "#fff";
+    ctx.strokeStyle = palette.primary;
     ctx.lineWidth = 1.2;
     ctx.lineJoin = "round";
     ctx.beginPath();
@@ -537,7 +573,7 @@ export function createAsteroidsGame(
   }
 
   function drawHUD() {
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = palette.text;
     ctx.font = "15px monospace";
 
     ctx.textAlign = "left";
@@ -550,23 +586,23 @@ export function createAsteroidsGame(
 
     if (ship.tripleShot > 0) {
       ctx.textAlign = "left";
-      ctx.fillStyle = "#0ff";
+      ctx.fillStyle = palette.accent;
       ctx.fillText(`3x  ${ship.tripleShot.toFixed(1)}s`, 14, 46);
     }
   }
 
   function drawOverlay(title: string, sub: string) {
     ctx.textAlign = "center";
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = palette.text;
     ctx.font = "bold 46px monospace";
     ctx.fillText(title, W / 2, H / 2 - 18);
     ctx.font = "18px monospace";
-    ctx.fillStyle = "rgba(255,255,255,0.65)";
+    ctx.fillStyle = palette.overlay;
     ctx.fillText(sub, W / 2, H / 2 + 22);
   }
 
   function draw() {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, W, H);
 
     particles.forEach((p) => p.draw());

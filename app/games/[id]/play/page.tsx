@@ -5,7 +5,15 @@ import { useParams, useRouter } from "next/navigation";
 import { GAMES } from "@/app/data/games";
 import { useUser } from "@/app/context/UserContext";
 import { GAME_ENGINES, type GameHandle } from "@/app/components/games/registry";
+import type { SkinId } from "@/app/components/games/themes";
 import { insertScore } from "@/lib/supabase/scores";
+
+const GAMES_WITH_SKINS = new Set(["asteroids"]);
+const SKIN_LABELS: Record<SkinId, string> = {
+  clasico: "CLÁSICO",
+  neon: "NEÓN",
+  retro: "RETRO",
+};
 
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
@@ -23,8 +31,10 @@ export default function GamePlayer() {
   const [over, setOver] = useState(false);
   const [name, setName] = useState(user?.name ?? "INVITADO");
   const [saved, setSaved] = useState(false);
+  const [skin, setSkin] = useState<SkinId>("clasico");
 
   const engineRef = useRef<GameHandle>(null);
+  const hasSkins = GAMES_WITH_SKINS.has(id);
 
   useEffect(() => {
     if (hasEngine || over || paused) return;
@@ -103,6 +113,26 @@ export default function GamePlayer() {
           </div>
         </div>
         <div className="hud-actions">
+          {hasSkins && (
+            <div
+              className="hud-stat"
+              style={{ display: "flex", gap: 6, alignItems: "center" }}
+            >
+              <div className="l">Skin</div>
+              <select
+                value={skin}
+                onChange={(e) => setSkin(e.target.value as SkinId)}
+                className="btn ghost"
+                style={{ padding: "4px 8px" }}
+              >
+                {(Object.keys(SKIN_LABELS) as SkinId[]).map((s) => (
+                  <option key={s} value={s}>
+                    {SKIN_LABELS[s]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <button className="btn yellow" onClick={() => setPaused((p) => !p)}>
             {paused ? "REANUDAR" : "PAUSA"}
           </button>
@@ -129,6 +159,7 @@ export default function GamePlayer() {
             <Engine
               ref={engineRef}
               paused={paused}
+              skin={skin}
               onScoreChange={setScore}
               onLivesChange={setLives}
               onLevelChange={setLevel}

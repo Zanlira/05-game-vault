@@ -8,7 +8,14 @@ import {
 import type { GameProps, GameHandle } from "./registry";
 
 const Asteroids = forwardRef<GameHandle, GameProps>(function Asteroids(
-  { paused, onScoreChange, onLivesChange, onLevelChange, onGameOver },
+  {
+    paused,
+    skin = "clasico",
+    onScoreChange,
+    onLivesChange,
+    onLevelChange,
+    onGameOver,
+  },
   ref
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,19 +23,23 @@ const Asteroids = forwardRef<GameHandle, GameProps>(function Asteroids(
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    const controls = createAsteroidsGame(canvasRef.current, {
-      onScoreChange,
-      onLivesChange,
-      onLevelChange,
-      onGameOver,
-    });
+    const controls = createAsteroidsGame(
+      canvasRef.current,
+      {
+        onScoreChange,
+        onLivesChange,
+        onLevelChange,
+        onGameOver,
+      },
+      skin
+    );
     controlsRef.current = controls;
     return () => {
       controls.destroy();
       controlsRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [skin]);
 
   useEffect(() => {
     if (paused) {

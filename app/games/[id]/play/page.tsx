@@ -8,7 +8,7 @@ import { GAME_ENGINES, type GameHandle } from "@/app/components/games/registry";
 import type { SkinId } from "@/app/components/games/themes";
 import { insertScore } from "@/lib/supabase/scores";
 
-const GAMES_WITH_SKINS = new Set(["asteroids"]);
+const GAMES_WITH_SKINS = new Set(["asteroids", "arkanoid", "snake"]);
 const SKIN_LABELS: Record<SkinId, string> = {
   clasico: "CLÁSICO",
   neon: "NEÓN",

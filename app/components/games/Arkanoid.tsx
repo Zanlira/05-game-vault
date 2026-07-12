@@ -6,7 +6,14 @@ import { loadSpritesheet } from "./arkanoid-assets/spritesheet";
 import type { GameProps, GameHandle } from "./registry";
 
 const Arkanoid = forwardRef<GameHandle, GameProps>(function Arkanoid(
-  { paused, onScoreChange, onLivesChange, onLevelChange, onGameOver },
+  {
+    paused,
+    skin = "clasico",
+    onScoreChange,
+    onLivesChange,
+    onLevelChange,
+    onGameOver,
+  },
   ref
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,12 +24,16 @@ const Arkanoid = forwardRef<GameHandle, GameProps>(function Arkanoid(
     let cancelled = false;
     loadSpritesheet(() => {
       if (cancelled || !canvasRef.current) return;
-      controlsRef.current = createArkanoidGame(canvasRef.current, {
-        onScoreChange,
-        onLivesChange,
-        onLevelChange,
-        onGameOver,
-      });
+      controlsRef.current = createArkanoidGame(
+        canvasRef.current,
+        {
+          onScoreChange,
+          onLivesChange,
+          onLevelChange,
+          onGameOver,
+        },
+        skin
+      );
     });
     return () => {
       cancelled = true;
@@ -30,7 +41,7 @@ const Arkanoid = forwardRef<GameHandle, GameProps>(function Arkanoid(
       controlsRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [skin]);
 
   useEffect(() => {
     if (paused) {

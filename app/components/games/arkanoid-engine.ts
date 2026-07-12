@@ -1,10 +1,10 @@
 import { LEVELS } from "./arkanoid-assets/levels";
 import {
   drawFrame,
-  drawSprite,
   EXPLOSION_DURATION,
   EXPLOSION_FRAMES,
 } from "./arkanoid-assets/spritesheet";
+import { ARKANOID_THEMES, type SkinId } from "./themes";
 
 export type ArkanoidHooks = {
   onScoreChange?: (score: number) => void;
@@ -39,9 +39,11 @@ type Explosion = {
 
 export function createArkanoidGame(
   canvas: HTMLCanvasElement,
-  hooks: ArkanoidHooks
+  hooks: ArkanoidHooks,
+  skin: SkinId = "clasico"
 ): ArkanoidControls {
   const ctx = canvas.getContext("2d")!;
+  const palette = ARKANOID_THEMES[skin];
 
   const PADDLE_SPEED = 400;
   const BLOCK_COLS = 10;
@@ -253,9 +255,9 @@ export function createArkanoidGame(
   }
 
   function drawOverlay(message: string) {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    ctx.fillStyle = palette.overlay;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = palette.text;
     ctx.font = "bold 64px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -263,10 +265,10 @@ export function createArkanoidGame(
   }
 
   function drawPauseOverlay() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.65)";
+    ctx.fillStyle = palette.overlay;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = palette.text;
     ctx.font = "bold 56px monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -278,14 +280,14 @@ export function createArkanoidGame(
     for (let i = 0; i < 5; i++) {
       const bx = PAUSE_BTN_ROW_X + i * (PAUSE_BTN_W + PAUSE_BTN_GAP);
       const isActive = i + 1 === currentLevel;
-      ctx.fillStyle = isActive ? "#f0c040" : "#444";
-      ctx.strokeStyle = "#fff";
+      ctx.fillStyle = isActive ? palette.accent : palette.grid;
+      ctx.strokeStyle = palette.text;
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.roundRect(bx, PAUSE_BTN_Y, PAUSE_BTN_W, PAUSE_BTN_H, 6);
       ctx.fill();
       ctx.stroke();
-      ctx.fillStyle = isActive ? "#000" : "#fff";
+      ctx.fillStyle = isActive ? palette.bg : palette.text;
       ctx.font = "bold 20px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -297,20 +299,35 @@ export function createArkanoidGame(
     }
   }
 
+  function drawGlow() {
+    if (palette.glow) {
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = palette.glow;
+    }
+  }
+
+  function clearGlow() {
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = "transparent";
+  }
+
   function draw() {
-    ctx.fillStyle = "#000";
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    ctx.strokeStyle = palette.grid;
+    ctx.lineWidth = 2;
+    drawGlow();
+    ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+    clearGlow();
+
     for (const block of blocks) {
-      if (block.alive)
-        drawSprite(
-          ctx,
-          "block_" + block.color,
-          block.x,
-          block.y,
-          block.w,
-          block.h
-        );
+      if (block.alive) {
+        ctx.fillStyle = palette.blockColors[block.color] ?? palette.primary;
+        drawGlow();
+        ctx.fillRect(block.x, block.y, block.w, block.h);
+        clearGlow();
+      }
     }
 
     for (const exp of explosions) {
@@ -328,11 +345,26 @@ export function createArkanoidGame(
       );
     }
 
-    drawSprite(ctx, "paddle", paddle.x, paddle.y, paddle.w, paddle.h);
-    drawSprite(ctx, "ball", ball.x, ball.y, ball.w, ball.h);
+    ctx.fillStyle = palette.primary;
+    drawGlow();
+    ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+    clearGlow();
+
+    ctx.fillStyle = palette.accent;
+    drawGlow();
+    ctx.beginPath();
+    ctx.arc(
+      ball.x + ball.w / 2,
+      ball.y + ball.h / 2,
+      ball.w / 2,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+    clearGlow();
 
     if (gameState === "playing") {
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = palette.text;
       ctx.font = "bold 18px monospace";
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
@@ -341,9 +373,18 @@ export function createArkanoidGame(
       ctx.fillText("Nivel: " + currentLevel, canvas.width / 2, 10);
       const ballSize = 16;
       const ballSpacing = 4;
+      ctx.fillStyle = palette.accent;
       for (let i = 0; i < lives; i++) {
         const bx = canvas.width - 10 - (lives - i) * (ballSize + ballSpacing);
-        drawSprite(ctx, "ball", bx, 10, ballSize, ballSize);
+        ctx.beginPath();
+        ctx.arc(
+          bx + ballSize / 2,
+          10 + ballSize / 2,
+          ballSize / 2,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
       }
     }
 

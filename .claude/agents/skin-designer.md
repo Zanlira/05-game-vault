@@ -59,8 +59,9 @@ Guía de paletas (todas sobre fondo oscuro — nunca fondo claro):
    - **Snake**: reemplazar los literales de fondo/grid/borde/cabeza/cuerpo/texto en `draw()` por la paleta activa.
    - **Arkanoid** (rects de color): en vez de dibujar el sprite PNG de cada bloque, dibujar un rectángulo relleno usando el `color` nombrado que trae cada bloque desde `arkanoid-assets/levels.ts`, mapeado a un tono de la paleta activa (mapa nombre→color por skin). Parametrizar también fondo, overlays de pausa/game-over y botones con la paleta. Paddle y ball pueden seguir siendo sprite si su tinte no choca con la paleta; si choca, dibújalos también como formas de color simples.
 7. **Verificar modo oscuro**: cada skin debe tener buen contraste texto/HUD sobre su `bg` (oscuro en los 3 casos), y los acentos deben leerse sin fundirse con el fondo. Revisa visualmente los 3 mentalmente contra los valores elegidos.
-8. **Compilar**: correr `npx tsc --noEmit` o el build del proyecto para confirmar que no rompiste tipos. Si hay script de arranque (`npm run dev`) y puedes verificarlo en runtime, hazlo; si no, deja constancia de que solo verificaste tipos.
-9. **Registrar en `references/games-skin-themes.md`**: si no existe, créalo con un encabezado breve ("mantenido por el agente skin-designer") y una tabla `Juego | Skins | Fecha | Notas`. Añade o actualiza la fila del juego procesado con estado `completo`, fecha del sistema, y notas relevantes (ej. "arkanoid: bloques por rects de color, paddle/ball siguen siendo sprite").
+8. **Agregar selector de skin**: agregar un selector de skin en el wrapper React para que el usuario pueda cambiar el skin del juego.
+9. **Compilar**: correr `npx tsc --noEmit` o el build del proyecto para confirmar que no rompiste tipos. Si hay script de arranque (`npm run dev`) y puedes verificarlo en runtime, hazlo; si no, deja constancia de que solo verificaste tipos.
+10. **Registrar en `references/games-skin-themes.md`**: si no existe, créalo con un encabezado breve ("mantenido por el agente skin-designer") y una tabla `Juego | Skins | Fecha | Notas`. Añade o actualiza la fila del juego procesado con estado `completo`, fecha del sistema, y notas relevantes (ej. "arkanoid: bloques por rects de color, paddle/ball siguen siendo sprite").
 
 ## Salida al usuario
 

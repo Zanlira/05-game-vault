@@ -6,7 +6,7 @@ import { loadSpritesheet } from "./snake-assets/sprites";
 import type { GameProps, GameHandle } from "./registry";
 
 const Snake = forwardRef<GameHandle, GameProps>(function Snake(
-  { paused, onScoreChange, onLivesChange, onLevelChange, onGameOver },
+  { paused, skin, onScoreChange, onLivesChange, onLevelChange, onGameOver },
   ref
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,12 +17,16 @@ const Snake = forwardRef<GameHandle, GameProps>(function Snake(
     let cancelled = false;
     loadSpritesheet(() => {
       if (cancelled || !canvasRef.current) return;
-      controlsRef.current = createSnakeGame(canvasRef.current, {
-        onScoreChange,
-        onLivesChange,
-        onLevelChange,
-        onGameOver,
-      });
+      controlsRef.current = createSnakeGame(
+        canvasRef.current,
+        {
+          onScoreChange,
+          onLivesChange,
+          onLevelChange,
+          onGameOver,
+        },
+        skin ?? "clasico"
+      );
     });
     return () => {
       cancelled = true;
@@ -30,7 +34,7 @@ const Snake = forwardRef<GameHandle, GameProps>(function Snake(
       controlsRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [skin]);
 
   useEffect(() => {
     if (paused) {

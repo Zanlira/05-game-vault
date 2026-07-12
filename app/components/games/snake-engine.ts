@@ -1,4 +1,5 @@
 import { FRUIT_NAMES, drawFruit, type FruitName } from "./snake-assets/sprites";
+import { SNAKE_THEMES, type SkinId } from "./themes";
 
 export type SnakeHooks = {
   onScoreChange?: (score: number) => void;
@@ -43,9 +44,11 @@ const DELTA: Record<Direction, Point> = {
 
 export function createSnakeGame(
   canvas: HTMLCanvasElement,
-  hooks: SnakeHooks
+  hooks: SnakeHooks,
+  skin: SkinId = "clasico"
 ): SnakeControls {
   const ctx = canvas.getContext("2d")!;
+  const palette = SNAKE_THEMES[skin];
 
   let snake: Point[],
     direction: Direction,
@@ -140,10 +143,10 @@ export function createSnakeGame(
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#14241a";
+    ctx.fillStyle = palette.bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.strokeStyle = "rgba(255,255,255,0.15)";
+    ctx.strokeStyle = palette.grid;
     ctx.lineWidth = 0.5;
     for (let c = 1; c < COLS; c++) {
       ctx.beginPath();
@@ -158,25 +161,35 @@ export function createSnakeGame(
       ctx.stroke();
     }
 
-    ctx.strokeStyle = "#81c784";
+    ctx.strokeStyle = palette.primary;
     ctx.lineWidth = 3;
+    if (palette.glow) {
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = palette.glow;
+    }
     ctx.strokeRect(1.5, 1.5, canvas.width - 3, canvas.height - 3);
+    ctx.shadowBlur = 0;
 
     drawFruit(ctx, fruit.name, fruit.x * CELL, fruit.y * CELL, CELL);
 
     snake.forEach((s, i) => {
-      ctx.fillStyle = i === 0 ? "#81c784" : "#4caf50";
+      ctx.fillStyle = i === 0 ? palette.primary : palette.accent;
+      if (palette.glow) {
+        ctx.shadowBlur = i === 0 ? 10 : 4;
+        ctx.shadowColor = palette.glow;
+      }
       ctx.fillRect(s.x * CELL + 1, s.y * CELL + 1, CELL - 2, CELL - 2);
     });
+    ctx.shadowBlur = 0;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = palette.text;
     ctx.font = "20px monospace";
     ctx.fillText(`SCORE ${score}`, 8, 24);
 
     if (gameState === "gameover") {
-      ctx.fillStyle = "rgba(0,0,0,0.6)";
+      ctx.fillStyle = palette.overlay;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = palette.text;
       ctx.font = "32px monospace";
       ctx.textAlign = "center";
       ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);

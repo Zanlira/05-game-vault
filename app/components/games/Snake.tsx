@@ -4,6 +4,14 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { createSnakeGame, type SnakeControls } from "./snake-engine";
 import { loadSpritesheet } from "./snake-assets/sprites";
 import type { GameProps, GameHandle } from "./registry";
+import TouchControls, { type TouchButton } from "./TouchControls";
+
+const TOUCH_BUTTONS: TouchButton[] = [
+  { code: "ArrowUp", label: "▲", position: "dpad-up" },
+  { code: "ArrowDown", label: "▼", position: "dpad-down" },
+  { code: "ArrowLeft", label: "◀", position: "dpad-left" },
+  { code: "ArrowRight", label: "▶", position: "dpad-right" },
+];
 
 const Snake = forwardRef<GameHandle, GameProps>(function Snake(
   { paused, skin, onScoreChange, onLivesChange, onLevelChange, onGameOver },
@@ -48,7 +56,17 @@ const Snake = forwardRef<GameHandle, GameProps>(function Snake(
     forceGameOver: () => controlsRef.current?.forceGameOver(),
   }));
 
-  return <canvas ref={canvasRef} width={600} height={600} />;
+  return (
+    <div className="max-w-full">
+      <canvas
+        ref={canvasRef}
+        width={600}
+        height={600}
+        className="max-w-full h-auto"
+      />
+      <TouchControls buttons={TOUCH_BUTTONS} />
+    </div>
+  );
 });
 
 export default Snake;

@@ -3,6 +3,15 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { createTetrisGame, type TetrisControls } from "./tetris-engine";
 import type { GameProps, GameHandle } from "./registry";
+import TouchControls, { type TouchButton } from "./TouchControls";
+
+const TOUCH_BUTTONS: TouchButton[] = [
+  { code: "ArrowLeft", label: "◀", position: "dpad-left" },
+  { code: "ArrowRight", label: "▶", position: "dpad-right" },
+  { code: "ArrowDown", label: "▼", position: "dpad-down" },
+  { code: "ArrowUp", label: "ROTAR", position: "action" },
+  { code: "Space", label: "CAER", position: "action" },
+];
 
 // registry.ts's GameProps only has onLivesChange; tetris has no lives, so
 // onLivesChange maps to the engine's onLinesChange (same functional slot).
@@ -43,9 +52,17 @@ const Tetris = forwardRef<GameHandle, GameProps>(function Tetris(
   }));
 
   return (
-    <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-      <canvas ref={boardRef} width={300} height={600} />
-      <canvas ref={nextRef} width={120} height={120} />
+    <div className="max-w-full">
+      <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+        <canvas
+          ref={boardRef}
+          width={300}
+          height={600}
+          className="max-w-full h-auto"
+        />
+        <canvas ref={nextRef} width={120} height={120} />
+      </div>
+      <TouchControls buttons={TOUCH_BUTTONS} />
     </div>
   );
 });

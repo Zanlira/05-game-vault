@@ -4,6 +4,12 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { createArkanoidGame, type ArkanoidControls } from "./arkanoid-engine";
 import { loadSpritesheet } from "./arkanoid-assets/spritesheet";
 import type { GameProps, GameHandle } from "./registry";
+import TouchControls, { type TouchButton } from "./TouchControls";
+
+const TOUCH_BUTTONS: TouchButton[] = [
+  { code: "ArrowLeft", label: "◀", position: "dpad-left" },
+  { code: "ArrowRight", label: "▶", position: "dpad-right" },
+];
 
 const Arkanoid = forwardRef<GameHandle, GameProps>(function Arkanoid(
   {
@@ -55,7 +61,17 @@ const Arkanoid = forwardRef<GameHandle, GameProps>(function Arkanoid(
     forceGameOver: () => controlsRef.current?.forceGameOver(),
   }));
 
-  return <canvas ref={canvasRef} width={800} height={600} />;
+  return (
+    <div className="max-w-full">
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        className="max-w-full h-auto"
+      />
+      <TouchControls buttons={TOUCH_BUTTONS} />
+    </div>
+  );
 });
 
 export default Arkanoid;

@@ -6,6 +6,14 @@ import {
   type AsteroidsControls,
 } from "./asteroids-engine";
 import type { GameProps, GameHandle } from "./registry";
+import TouchControls, { type TouchButton } from "./TouchControls";
+
+const TOUCH_BUTTONS: TouchButton[] = [
+  { code: "ArrowLeft", label: "◀", position: "dpad-left" },
+  { code: "ArrowRight", label: "▶", position: "dpad-right" },
+  { code: "ArrowUp", label: "▲", position: "dpad-up" },
+  { code: "Space", label: "DISPARAR", position: "action" },
+];
 
 const Asteroids = forwardRef<GameHandle, GameProps>(function Asteroids(
   {
@@ -53,7 +61,17 @@ const Asteroids = forwardRef<GameHandle, GameProps>(function Asteroids(
     forceGameOver: () => controlsRef.current?.forceGameOver(),
   }));
 
-  return <canvas ref={canvasRef} width={800} height={600} />;
+  return (
+    <div className="max-w-full">
+      <canvas
+        ref={canvasRef}
+        width={800}
+        height={600}
+        className="max-w-full h-auto"
+      />
+      <TouchControls buttons={TOUCH_BUTTONS} />
+    </div>
+  );
 });
 
 export default Asteroids;

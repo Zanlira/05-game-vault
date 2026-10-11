@@ -40,6 +40,8 @@ usa siempre /frontend-design para diseñar interfaces de usuario.
 
 Para integrar un juego nuevo (de `references/started-games/` o externo) al vault con leaderboard real, usa `/add-game` — genera el spec, luego correr `/spec-impl` sobre él.
 
+`/spec-impl-game <NN-spec>` — igual que `/spec-impl` (lo ejecuta íntegro) y al terminar lanza en secuencia `skin-designer` y luego `mobile-porter` sobre el juego implementado. Usar para specs que añaden un juego jugable.
+
 ## agents
 
 `game-planner` — decide qué juego arcade añadir al vault. Investiga catálogo actual, huecos categoría/mecánica/estética, propone candidatos, mantiene memoria en `references/game-suggestions.md`. Usar antes de `/add-game`.
@@ -47,6 +49,8 @@ Para integrar un juego nuevo (de `references/started-games/` o externo) al vault
 `game-jam` — recibe un tema libre y genera 2 propuestas de juego distintas, cada una con spec completo en `specs/game-jam/<id>/spec.md`. Se lanza 2x en paralelo (ángulos categoría/color distintos). Usar `/game-jam <tema>` para dispararlo.
 
 `skin-designer` — implementa 3 skins (`clasico` default, `neon`, `retro`) sobre UN juego jugable indicado (arkanoid, asteroids, snake, tetris). Edita engine + wrapper, mantiene paletas en `app/components/games/themes.ts`, registra progreso en `references/games-skin-themes.md`. Procesa un juego por invocación.
+
+`mobile-porter` — aplica soporte táctil mobile (spec 10) a UN juego jugable indicado. Cabla `MobileGamepad` en la play-page (HUD oculto en mobile, canvas responsive, D-pad/botones) sin tocar el componente canvas ni otros juegos. Procesa un juego por invocación.
 
 ## Architecture
 

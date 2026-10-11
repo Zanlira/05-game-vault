@@ -1,6 +1,6 @@
 # SPEC 10 — Controles táctiles móviles
 
-> **Status:** approved   · **Depends on:** SPEC 07 (tetris-game, `registry.ts`), SPEC 08 (arkanoid-game), SPEC 09 (snake-game) · **Date:** 2026-08-08
+> **Status:** implemented   · **Depends on:** SPEC 07 (tetris-game, `registry.ts`), SPEC 08 (arkanoid-game), SPEC 09 (snake-game) · **Date:** 2026-08-10
 > **Objective:** Agregar D-pad y botones on-screen táctiles a los 4 juegos jugables (arkanoid, asteroids, snake, tetris) mediante un componente `TouchControls.tsx` compartido que dispara `KeyboardEvent` sintéticos hacia los engines existentes (sin modificarlos), y hacer los canvas responsive vía CSS scale-down para que quepan en pantalla móvil.
 
 ## Scope

@@ -1,6 +1,6 @@
 ---
 name: skin-designer
-description: Implementa 3 skins visuales (clasico=default, neon, retro) sobre UN juego jugable del Arcade Vault que se le indique (arkanoid, asteroids, snake o tetris). Edita el engine del juego y su wrapper React para parametrizar colores hardcoded, crea/extiende app/components/games/themes.ts con el contrato de paleta compartido, y verifica legibilidad en modo oscuro. Al terminar registra el juego en references/games-skin-themes.md. Úsalo cuando pidan "dale skins a X juego" o "que X juego tenga tema neon/retro/clasico" — procesa un solo juego por invocación, no todo el catálogo de golpe.
+description: Implementa 3 skins visuales (clasico=default, neon, retro) sobre UN juego jugable del Arcade Vault que se le indique (cualquiera registrado en registry.ts: arkanoid, asteroids, snake, tetris, …). Edita el engine del juego y su wrapper React para parametrizar colores hardcoded, crea/extiende app/components/games/themes.ts con el contrato de paleta compartido, y verifica legibilidad en modo oscuro. Al terminar registra el juego en references/games-skin-themes.md. Úsalo cuando pidan "dale skins a X juego" o "que X juego tenga tema neon/retro/clasico" — procesa un solo juego por invocación, no todo el catálogo de golpe.
 tools: Read, Grep, Glob, Bash, Write, Edit
 model: sonnet
 ---
@@ -11,7 +11,7 @@ Responde siempre en español (convención del proyecto).
 
 ## Entrada esperada
 
-Un id de juego jugable: `arkanoid | asteroids | snake | tetris` (los únicos con engine real, ver `app/components/games/registry.ts`). Si no te indican juego, pídelo. Si el juego pedido no es jugable (`gloton`, `invasores`, `ranaria`, `duelo-pixel` son solo catálogo sin engine) o no existe en `app/data/games.ts`, dilo y detente sin tocar código.
+Un id de juego jugable: cualquiera con engine real registrado en `app/components/games/registry.ts` (hoy: `arkanoid | asteroids | snake | tetris`, más los que se añadan vía `/spec-impl-game`). Si no te indican juego, pídelo. Si el juego pedido no está en el registry (hoy `gloton`, `invasores`, `ranaria`, `duelo-pixel` son solo catálogo sin engine) o no existe en `app/data/games.ts`, dilo y detente sin tocar código.
 
 ## Restricción dura de alcance
 

@@ -1,6 +1,7 @@
 import type { ComponentType, RefAttributes } from "react";
 import Arkanoid from "./Arkanoid";
 import Asteroids from "./Asteroids";
+import Frogger from "./Frogger";
 import Snake from "./Snake";
 import Tetris from "./Tetris";
 import type { SkinId } from "./themes";
@@ -24,6 +25,7 @@ export const GAME_ENGINES: Record<
 > = {
   arkanoid: Arkanoid,
   asteroids: Asteroids,
+  frogger: Frogger,
   snake: Snake,
   tetris: Tetris,
 };
